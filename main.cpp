@@ -560,7 +560,34 @@ class NotePad{
         void load(){
             ifstream in("save.txt");
             if(!in){
+                start_color();
+                init_pair(2,COLOR_BLACK,COLOR_MAGENTA);
 
+                attron(COLOR_PAIR(2)); //color on
+                move(28,40);
+                mvprintw(28,40,"  ===============================  ");
+                move(29,40);
+                mvprintw(29,40,"  ||    :( NO FILE FOUND :(    ||  ");
+                move(30,40);
+                mvprintw(30,40,"  ===============================  ");
+
+                // sleep(2000000);
+                refresh();
+                napms(1500);
+                attroff(COLOR_PAIR(2)); // color off
+                // delay_output(2000);
+                refresh();
+                move(28,40);
+                mvprintw(28,40,"                                   ");
+                move(29,40);
+                mvprintw(29,40,"                                   ");
+                move(30,40);
+                mvprintw(30,40,"                                   ");
+                refresh();
+                // usleep(2000000);
+                // mvprintw(28,40,"                                   ");
+                // mvprintw(29,40,"                                   ");
+                // mvprintw(30,40,"                                   ");
             }else{
                 string str ="";
                 getline(in,str);
