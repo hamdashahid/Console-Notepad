@@ -119,12 +119,15 @@ class Stack{
             top = newNode;
 
         }
-
         string pop(){
+            if(isEmpty()) return "";
             StackNode* temp = top;
             top = top->next;
-            return temp->data;
+            string data = temp->data;
+            delete temp;  
+            return data;
         }
+
 
         bool isEmpty(){
             return top == NULL;
@@ -150,28 +153,31 @@ class List{
             tail = t;
         }
 
-        void append(char c){
-            if(isEmpty() == true){
-                head = new ListNode(c);
-                tail = head;
+        void append(char c) {
+            if (isEmpty()) {
+                head = new ListNode(c);  
+                tail = head;            
                 return;
             }
-            ListNode* add = new ListNode(c);
-            tail-> next = add;
-            add->prev = tail;
-            tail = tail->next;
+            
+            ListNode* add = new ListNode(c);  
+            tail->next = add;                 
+            add->prev = tail;                 
+            tail = add;                      
         }
 
-        char remove(char c){
-            if (isEmpty() == true) return '\0';
+        void remove(){
+            if(isEmpty()) return;
 
             ListNode* temp = tail;
-            char d = temp->data;
             tail = tail->prev;
             delete temp;
-            return d;
 
+            if(tail == NULL) {
+                head = NULL;  
+            }
         }
+
 
         bool isEmpty(){
             return head == NULL;
@@ -409,15 +415,28 @@ class NotePad{
         AVLtree dict;
         List li;
         Stack stk;
+        int x ;
+        int y;
+        int prevx;
+        int prevy;
+        Stack xpos;
 
         NotePad(AVLtree d){
             dict = d;
             li = List();
             stk = Stack();
+            x=15;
+            y=10;
+            prevx=x;
+            prevy=y;
+            xpos = Stack();
         }
 
         void display(){
+            system("stty -ixon");
             initscr();
+            noecho();
+            cbreak();
             NotepadScreen();
 
 
@@ -430,13 +449,18 @@ class NotePad{
             clear();
             refresh();
             start_color();
-            init_pair(1,COLOR_MAGENTA,COLOR_WHITE);
+            init_pair(1,COLOR_MAGENTA,COLOR_BLACK);
 
             attron(COLOR_PAIR(1)); //color on
-            mvprintw(0,23,"||===============================================================||");
-            mvprintw(1,23,"||                          :) NOTEPAD :)                        ||");
-            mvprintw(2,23,"||===============================================================||");
-            attroff(COLOR_PAIR(1)); // color off
+            mvprintw(1,23,"  ===================================================================  ");
+            mvprintw(2,23,"  ||                                                               ||  ");
+            mvprintw(3,23,"  ||                          :) NOTEPAD :)                        ||  ");
+            mvprintw(4,23,"  ||                                         BY HAMDA SHAHID       ||  ");
+            mvprintw(5,23,"  ===================================================================  ");
+            // attroff(COLOR_PAIR(1)); // color off
+            bkgd(COLOR_PAIR(1));
+            border(0,0,0,0,0,0,0,0);
+            takeinputs();
             refresh();
         }
 
@@ -448,40 +472,143 @@ class NotePad{
 
             for(int i=0 ; true ; i++){
                 char ch = getch();
+               
+
 
                 switch(ch){
                     case 12 :               //CTRL+L
                         load();
                         break;
                     case 19 :               //CTRL+S
+                        // cout<<"SAVE CALLED \n";
                         save();
                         break;   
                     case 8:                 //BACKSPACE
                         backspace();
                         break;    
+                    case 32:
+                        xpos.push(to_string(x));
+                        li.append(ch);
+                        x++;
+                        space();
+                        break;
+                    case 9:
+                    // cout<<"yahooo \n";
+                        li.append(ch);
+                        xpos.push(to_string(x));
+                        x+=4;
+                        space();
+                        break;    
                     case 27:                //ESC
                         return;     
                     default:
-                        printText(ch);
+                       
+                        if((ch >=32 && ch<127) || ch==9 || ch==10 ){
+                            // li.append(ch);
+                            printText(ch);
+                        }
                         // return;
                 }
 
             }
         }
 
-        void printText(char a){
+        void space(){
+            
+            string str = "";
+            ListNode* temp = li.head;
+            while(temp!=NULL){
+                str+=temp->data;
+                temp = temp->next;
+            }
+            stk.push(str);
+        }
 
+        void printText(char a){
+           
+           
+            if((a >=32 && a<127) || a==9 || a==10 ){
+                li.append(a);
+                // printText(a);
+            }
+            if(a >= 32 && a < 127){
+                move(y,x);
+                addch(a);
+                xpos.push(to_string(x));
+                x++;
+            }
+            if(a==10){
+                // prevx=x;
+                xpos.push(to_string(x));
+                x=15;
+                y++;
+
+            }
+            if(a==9){
+                xpos.push(to_string(x));
+                x+=4;
+            }
+
+            // if(a==8){
+            //     cout<<"backspace";
+            //     x--;
+            // }
+            
+            refresh();
         }
 
         void load(){
+            ifstream in("save.txt");
+            if(!in){
+
+            }else{
+                string str ="";
+                getline(in,str);
+                for(int i=0 ; str[i]!='\0' ;i++){
+                    // li.append(str[i]);
+                    printText(str[i]);
+
+                }
+            }
 
         }
 
         void save(){
-
+            // cout<<"hello\n";
+            ofstream out;
+            if(li.isEmpty() == true) return;
+            out.open("save.txt" );
+                ListNode* temp = li.head;
+                // StackNode* temp = stk.top;
+                while(temp!=NULL){
+                    out<<temp->data;
+                    temp=temp->next;
+                }
+            out.close();
         }
+        
         void backspace(){
-
+            // cout<<x<<" ";
+            if (y>10 && x == 15){
+                y--;
+                // x=prevx;
+                x = stoi(xpos.pop());
+                move(y,x);
+                addch(' ');
+                // move(y,x);
+                li.remove();
+            }
+            
+           if(x<=15){
+           }else{
+                x = stoi(xpos.pop());
+                move(y,x);
+                addch(' ');
+                // move(y,x);
+                li.remove();
+           }
+           
+           
         }
 };
 
