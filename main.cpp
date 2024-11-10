@@ -16,11 +16,13 @@ struct ListNode{
 
 struct AVLnode{
     string data;
+    int height;
     AVLnode* right;
     AVLnode* left;
 
-    AVLnode(string d = "" , AVLnode* r = NULL , AVLnode* l = NULL){
+    AVLnode(string d = "" ,int h = 0, AVLnode* r = NULL , AVLnode* l = NULL){
         data = d;
+        height = h;
         right = r;
         left = l;
     }
@@ -140,7 +142,6 @@ class List{
         ListNode* head;
         ListNode* tail;
 
-
         List(ListNode* h =NULL , ListNode* t = NULL){
             head = h;
             tail = t;
@@ -191,44 +192,192 @@ class AVLtree{
             root = r;
         }
 
-        void insert(){
+        AVLnode* insert(string data , AVLnode* p){
+            AVLnode* add = new AVLnode(data);
+            if(p == NULL){
+                p = add;
+                return p;
+            }
 
+            // AVLnode* temp = root;
+
+            if(p->data>data){
+                p = insert(data,p->left);
+            }else if(p->data<data){
+                p = insert(data,p->right);
+            }else if(p->data == data){
+                cout<<"DUPLICATE DATA \n";
+                return p;
+            }
+
+            p->height = Height(p);
+            if(BalanceFactor(p) ==2){
+                if(BalanceFactor(p->left) >=0){
+                    //right rotation
+                    p = RightRotate(p);
+                }else{
+                    //left right rotation
+                    p = LeftRightRotate(p);
+                }
+            }else if(BalanceFactor(p) == -2){
+                if(BalanceFactor(p->right) >=0 ){
+                    //Right left
+                    p = RightLeftRotate(p);
+                }else{
+                    //left rotation
+                    p = LeftRotate(p);
+                }
+            }
+            return p;
         }
 
-        void del(){
+        AVLnode* del(string data , AVLnode* p){
+            if(p==NULL) return p;
+            if(data<p->data){
+                p = del(data,p->left);
+            }else if(data>p->data){
+                p = del(data,p->right);
+            }else{
+                //no child
+                if(p->left == NULL && p->right == NULL){
+                    delete p;
+                    return NULL;
+                }
 
+                //one child
+                else if (p->left !=NULL && p->right == NULL){
+                    AVLnode* temp = p->left;
+                    delete p;
+                    p = temp;
+                    return p;
+
+                }else if(p->right !=NULL && p->left == NULL){
+                    AVLnode* temp = p->right;
+                    delete p;
+                    p = temp;
+                    return p;
+
+                }
+                 // two children
+                else if(p->left !=NULL && p->right !=NULL){
+                    //inorder successor will replace
+                    AVLnode* inorderSuccessor = findmin(p->right);
+                    p->data = inorderSuccessor->data;
+                    p = del(inorderSuccessor->data,p->right);
+                } 
+            }
+
+            p->height = Height(p);
+            if(BalanceFactor(p) ==2){
+                if(BalanceFactor(p->left) >=0){
+                    //right rotation
+                    p = RightRotate(p);
+                }else{
+                    //left right rotation
+                    p = LeftRightRotate(p);
+                }
+            }else if(BalanceFactor(p) == -2){
+                if(BalanceFactor(p->right) >=0 ){
+                    //Right left
+                    p = RightLeftRotate(p);
+                }else{
+                    //left rotation
+                    p = LeftRotate(p);
+                }
+            }
+            return p;
+        }
+
+        AVLnode* findmin(AVLnode* p){
+            AVLnode* temp = p;
+            while(p->left!= NULL){
+                p = p->left;
+            }
+            return p;
         }
 
         bool isEmpty(){
-
+            return root == NULL;
         }
 
-        void RightRotate(){
+        //        k1
+        //      /   \
+        //    k2    ...
+        //  /   \
+        // k3   ....
 
+        AVLnode* RightRotate(AVLnode* p){    
+            AVLnode* temp = p->left;
+            p->left = temp->right;
+            temp->right = p;
+            p->height = Height(p);
+            temp->height = Height(temp);
+            return temp;
         }
 
-        void LeftRotate(){
+        //      k1
+        //    /    \
+        //  ...     k2
+        //         /  \
+        //       ...    k3
 
+        AVLnode* LeftRotate(AVLnode* p){
+            AVLnode* temp = p->right;
+            p->right = temp->left;
+            temp->left = p;
+            p->height = Height(p);
+            temp->height = Height(temp);
+            return temp;
         }
 
-        void LeftRightRotate(){
+        //          k1
+        //         /  \
+        //       k2   ....
+        //      /  \
+        //    ...   k3
+        //
 
+        AVLnode* LeftRightRotate(AVLnode* p){
+            p->left = LeftRotate(p->left);
+            p->left->height = Height(p->left);
+            p = RightRotate(p);
+            p->height = Height(p);
+
+            return p;
         }
 
-        void RightLeftRotate(){
+        //          k1
+        //         /  \
+        //       ....  k2
+        //            /  \
+        //           k3  ....
+        //
 
+        AVLnode* RightLeftRotate(AVLnode* p){
+            p->right = RightRotate(p->right);
+            p->right->height = Height(p->right);
+            p = LeftRotate(p);
+            p->height = Height(p);
+            return p;
         }
 
-        void BalanceFactor(){
-
+        int BalanceFactor(AVLnode* p){
+            return (Height(p->left) - Height(p->right));
         }
 
-        void Height(){
+        int Height(AVLnode* p){
+            if(p==NULL) return -1;
+            int leftTree = Height(p->left);
+            int rightTree = Height(p->right);
 
+            return 1+max(leftTree,rightTree);
         }
 
-        void PreOrder(){
-
+        void PreOrder(AVLnode* p){
+            if(p==NULL) return;
+            cout<<p->data<<"\t";
+            PreOrder(p->left);
+            PreOrder(p->right);
         }
 };
 
