@@ -1,5 +1,5 @@
 #include<iostream>
-#include<windows.h>
+#include <ncurses.h>
 #include <fstream>
 #include<string>
 using namespace std;
@@ -163,7 +163,7 @@ class List{
         }
 
         char remove(char c){
-            if (isEmpty() == true) return;
+            if (isEmpty() == true) return '\0';
 
             ListNode* temp = tail;
             char d = temp->data;
@@ -196,8 +196,8 @@ class AVLtree{
         }
 
         AVLnode* insert(string data , AVLnode* p){
-            AVLnode* add = new AVLnode(data);
             if(p == NULL){
+                AVLnode* add = new AVLnode(data);
                 p = add;
                 return p;
             }
@@ -205,9 +205,9 @@ class AVLtree{
             // AVLnode* temp = root;
 
             if(p->data>data){
-                p = insert(data,p->left);
+                p->left = insert(data,p->left);
             }else if(p->data<data){
-                p = insert(data,p->right);
+                p->right = insert(data,p->right);
             }else if(p->data == data){
                 cout<<"DUPLICATE DATA \n";
                 return p;
@@ -237,9 +237,9 @@ class AVLtree{
         AVLnode* del(string data , AVLnode* p){
             if(p==NULL) return p;
             if(data<p->data){
-                p = del(data,p->left);
+                p->left = del(data,p->left);
             }else if(data>p->data){
-                p = del(data,p->right);
+                p->right = del(data,p->right);
             }else{
                 //no child
                 if(p->left == NULL && p->right == NULL){
@@ -292,7 +292,8 @@ class AVLtree{
         }
 
         AVLnode* findmin(AVLnode* p){
-            AVLnode* temp = p;
+            // AVLnode* temp = p;
+            if(p==NULL) return NULL;
             while(p->left!= NULL){
                 p = p->left;
             }
@@ -389,30 +390,111 @@ AVLnode* ReadTXT(){
     ifstream in;
     in.open("dictionary.txt");
         while (!in.eof()){
-            AVLnode* temp;
+            AVLnode* temp = new AVLnode();
             getline(in,temp->data);
-            avl.insert(temp->data,avl.root);
+            // cout<<"yes\n";
+            avl.root = avl.insert(temp->data,avl.root);
+            // cout<<temp->data<<" ";
+            // cout<<"INSERTED\t";
+            // 
         }
     in.close();
+    // avl.PreOrder(avl.root);
+    // cout<<avl.root<<endl;
     return avl.root;
 }
 
 class NotePad{
     public:
+        AVLtree dict;
+        List li;
+        Stack stk;
 
-        NotePad(){
+        NotePad(AVLtree d){
+            dict = d;
+            li = List();
+            stk = Stack();
+        }
+
+        void display(){
+            initscr();
+            NotepadScreen();
+
+
+            getch();
+            endwin();
+        }
+
+        void NotepadScreen(){
+            // clearScreen();
+            clear();
+            refresh();
+            start_color();
+            init_pair(1,COLOR_MAGENTA,COLOR_WHITE);
+
+            attron(COLOR_PAIR(1)); //color on
+            mvprintw(0,23,"||===============================================================||");
+            mvprintw(1,23,"||                          :) NOTEPAD :)                        ||");
+            mvprintw(2,23,"||===============================================================||");
+            attroff(COLOR_PAIR(1)); // color off
+            refresh();
+        }
+
+        void takeinputs(){
+            keypad(stdscr, TRUE);
+            cbreak();
+            noecho();
+            nodelay(stdscr, TRUE);  
+
+            for(int i=0 ; true ; i++){
+                char ch = getch();
+
+                switch(ch){
+                    case 12 :               //CTRL+L
+                        load();
+                        break;
+                    case 19 :               //CTRL+S
+                        save();
+                        break;   
+                    case 8:                 //BACKSPACE
+                        backspace();
+                        break;    
+                    case 27:                //ESC
+                        return;     
+                    default:
+                        printText(ch);
+                        // return;
+                }
+
+            }
+        }
+
+        void printText(char a){
 
         }
 
-        void createScreen(){
-            // clearScreen();
+        void load(){
+
+        }
+
+        void save(){
+
+        }
+        void backspace(){
+
         }
 };
 
 int main(){
-    AVLtree* DictTree;
-    DictTree->root = ReadTXT();
+    AVLtree DictTree;
+    // cout<<"\n<================ READING DICTIONARY ==========================>\n";
+    // DictTree.root = ReadTXT();
+    // cout<<"\n<===================DICTIONARY READ SUCCESSFULLY ===============>\n\n";
+    NotePad N(DictTree);
+    N.display();
+            // cout<<"yes\n";
 
+    // DictTree.PreOrder(DictTree.root);
 
 
     // cout<<"HELLO WORLD \n";
