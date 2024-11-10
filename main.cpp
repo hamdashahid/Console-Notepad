@@ -1,4 +1,7 @@
 #include<iostream>
+#include<windows.h>
+#include <fstream>
+#include<string>
 using namespace std;
 
 struct ListNode{
@@ -381,14 +384,37 @@ class AVLtree{
         }
 };
 
-
-void ReadTXT(){
-
+AVLnode* ReadTXT(){
+    AVLtree avl;
+    ifstream in;
+    in.open("dictionary.txt");
+        while (!in.eof()){
+            AVLnode* temp;
+            getline(in,temp->data);
+            avl.insert(temp->data,avl.root);
+        }
+    in.close();
+    return avl.root;
 }
 
+class NotePad{
+    public:
+
+        NotePad(){
+
+        }
+
+        void createScreen(){
+            // clearScreen();
+        }
+};
 
 int main(){
+    AVLtree* DictTree;
+    DictTree->root = ReadTXT();
 
-    cout<<"HELLO WORLD \n";
+
+
+    // cout<<"HELLO WORLD \n";
     return 0;
 }
