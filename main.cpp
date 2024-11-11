@@ -33,10 +33,10 @@ struct AVLnode{
 };
 
 struct QueueNode{
-    string data;
+    char data;
     QueueNode* next;
 
-    QueueNode(string d = " " , QueueNode* nxt = NULL){
+    QueueNode(char d ='\0' , QueueNode* nxt = NULL){
         data = d;
         next = nxt;
     }
@@ -62,7 +62,7 @@ class Queue{
             rear = r;
         }
 
-        void enqueue(string add){
+        void enqueue(char add){
             if(isEmpty() == true){
                 front = new QueueNode(add);
                 rear = front;
@@ -73,15 +73,21 @@ class Queue{
             rear = rear->next;
         }
 
-        void dequeue(string str){
+        char dequeue(){
             if(isEmpty() == true){
                 cout<<"QUEUE IS EMPTY \n";
-                return;
+                return '\0';
             }
 
             QueueNode* temp = front;
-            front = front->next;
+            // front = front->next;
+            if(front->next == NULL){
+                front=NULL;
+                rear = NULL;
+            }
+            char ch = temp->data;
             delete temp;
+            return ch;
 
         }
 
@@ -389,6 +395,23 @@ class AVLtree{
             PreOrder(p->left);
             PreOrder(p->right);
         }
+
+        string search(string str){
+            if(isEmpty() == true) return "";
+            AVLnode* temp = root;
+
+            while(temp!=NULL){
+                if(str<temp->data){
+                    temp=temp->left;
+                }else if(str>temp->data){
+                    temp = temp->right;
+                }else{
+                    return temp->data;
+                }
+            }
+            return "";
+        }
+
 };
 
 AVLnode* ReadTXT(){
@@ -415,6 +438,7 @@ class NotePad{
         AVLtree dict;
         List li;
         Stack stk;
+        Queue Q1;   
         int x ;
         int y;
         int prevx;
@@ -424,6 +448,7 @@ class NotePad{
         NotePad(AVLtree d){
             dict = d;
             li = List();
+            Q1 = Queue();
             stk = Stack();
             x=15;
             y=10;
@@ -469,42 +494,42 @@ class NotePad{
             cbreak();
             noecho();
             nodelay(stdscr, TRUE);  
-
             for(int i=0 ; true ; i++){
                 char ch = getch();
-               
-
-
                 switch(ch){
                     case 12 :               //CTRL+L
                         load();
                         break;
                     case 19 :               //CTRL+S
-                        // cout<<"SAVE CALLED \n";
                         save();
                         break;   
                     case 8:                 //BACKSPACE
                         backspace();
                         break;    
-                    case 32:
+                    case 32:                //SPACE
                         xpos.push(to_string(x));
                         li.append(ch);
                         x++;
-                        space();
+                        // word check
                         break;
-                    case 9:
-                    // cout<<"yahooo \n";
+                    case 10:        //ENTER
+                        li.append('\n');
+                        xpos.push(to_string(x));
+                        x=15;
+                        y++;
+                        //word check
+                        break;    
+                    case 9:                 //TAB
                         li.append(ch);
                         xpos.push(to_string(x));
                         x+=4;
-                        space();
+                        // /word check
                         break;    
                     case 27:                //ESC
                         return;     
                     default:
                        
                         if((ch >=32 && ch<127) || ch==9 || ch==10 ){
-                            // li.append(ch);
                             printText(ch);
                         }
                         // return;
@@ -513,40 +538,167 @@ class NotePad{
             }
         }
 
-        void space(){
-            
+        void Wordcheck(){
             string str = "";
-            ListNode* temp = li.head;
-            while(temp!=NULL){
-                str+=temp->data;
-                temp = temp->next;
+            while(Q1.isEmpty() == false){
+                str+=Q1.dequeue();
             }
-            stk.push(str);
+            
+            string str2 = dict.search(str);
+
+            if(str2==""){
+
+            }
+
+        }
+
+        bool modifyWord(string str){
+            letterSubs(str);
+            letteromit(str);
+            letterinsert(str);
+            letterReversal(str);
+            if( stk.isEmpty() == false){
+                return true;
+            }
+            return false;
+        }
+
+        void letterSubs(string str){
+            char ch = 65;
+            //65 - 90 && 97-122 // 50 letters
+            for(int j=0 ; str[j] !='\0';j++){
+                string temp = str;
+                for(int i=65;i<=122;i++){
+                    temp[j] = i;
+                    string ss = dict.search(temp);
+                    if(ss !=""){
+                        stk.push(ss);
+                    }
+                    if(i==90){
+                        i=96;
+                    }
+                }
+            }
+        }
+
+        void letteromit(string str){
+        // for(int i=0 ; str[i] !='\0' ; i++){
+            for(int j=0 ;str[j]!='\0';j++){
+                string temp ="";
+                for(int k=0 ; str[k]!='\0';k++){
+                    if(k==j ){
+                        //skip
+                    }else{
+                        temp+=str[k];
+                    }
+                }
+                string ss = dict.search(temp);
+                if(ss !=""){
+                    stk.push(ss);
+                }
+
+                // cout<<temp<<" ";
+            }
+            // cout<<endl;
+
+    // }
+        }
+
+        void letterinsert(string str){
+            for(int i=65;i<=122;i++){
+                for(int k=0; str[k] !='\0';k++){
+                    string temp = "";
+                    for(int j =0 ; str[j]!='\0';j++){
+                        if(k==j){
+                            temp+=i;
+                        }else{
+                            temp+=str[j];
+                        }
+                    }
+                    string ss = dict.search(temp);
+                    if(ss !=""){
+                        stk.push(ss);
+                    }
+                    // cout<<temp<<" ";
+                }
+                if(i==90){
+                    i=96;
+                }
+            // cout<<endl;
+            }
+        }
+
+        string letterReversal(string str){
+            for(int i=0;str[i]!='\0';i++){
+                string temp = "";
+                for(int j=0;str[j]!='\0';j++){
+                    if(i==j){
+                        // char te = str[i];
+                        temp[j] = str[j+1];
+                        temp[j+1] = str[j];
+
+                    }else{
+                        temp+=str[j];
+                    }
+                }
+            }
+        }
+
+        void suggestions(string str){
+
         }
 
         void printText(char a){
            
-           
-            if((a >=32 && a<127) || a==9 || a==10 ){
-                li.append(a);
-                // printText(a);
-            }
-            if(a >= 32 && a < 127){
-                move(y,x);
-                addch(a);
-                xpos.push(to_string(x));
-                x++;
-            }
-            if(a==10){
-                // prevx=x;
-                xpos.push(to_string(x));
-                x=15;
-                y++;
+            if(y<=27 && x<=100){
+                if((a >=32 && a<127) || a==9 || a==10 ){
+                    li.append(a);
+                    Q1.enqueue(a);
+                    // printText(a);
+                }
+                if(a >= 32 && a < 127){
+                    move(y,x);
+                    addch(a);
+                    xpos.push(to_string(x));
+                    x++;
+                }
+                if(a==10){
+                    // prevx=x;
+                    xpos.push(to_string(x));
+                    x=15;
+                    y++;
 
-            }
-            if(a==9){
-                xpos.push(to_string(x));
-                x+=4;
+                }
+                if(a==9){
+                    xpos.push(to_string(x));
+                    x+=4;
+                }
+            }else{
+                refresh();
+                start_color();
+                init_pair(2,COLOR_BLACK,COLOR_MAGENTA);
+
+                attron(COLOR_PAIR(2)); //color on
+                move(28,40);
+                mvprintw(28,40,"  ================================  ");
+                move(29,40);
+                mvprintw(29,40,"  ||    :( NO MORE SPACE :()    ||  ");
+                move(30,40);
+                mvprintw(30,40,"  ================================  ");
+
+                // sleep(2000000);
+                refresh();
+                napms(100);
+                attroff(COLOR_PAIR(2)); // color off
+                // delay_output(2000);
+                refresh();
+                move(28,40);
+                mvprintw(28,40,"                                    ");
+                move(29,40);
+                mvprintw(29,40,"                                    ");
+                move(30,40);
+                mvprintw(30,40,"                                    ");
+                refresh();
             }
 
             // if(a==8){
@@ -589,12 +741,16 @@ class NotePad{
                 // mvprintw(29,40,"                                   ");
                 // mvprintw(30,40,"                                   ");
             }else{
-                string str ="";
-                getline(in,str);
-                for(int i=0 ; str[i]!='\0' ;i++){
-                    // li.append(str[i]);
-                    printText(str[i]);
+                printText(10);
+                while(!in.eof()){
+                    string str ="";
+                    getline(in,str);
+                    for(int i=0 ; str[i]!='\0' ;i++){
+                        // li.append(str[i]);
+                        printText(str[i]);
 
+                    }
+                    printText(10);
                 }
             }
 
@@ -612,6 +768,31 @@ class NotePad{
                     temp=temp->next;
                 }
             out.close();
+            refresh();
+            start_color();
+            init_pair(2,COLOR_BLACK,COLOR_MAGENTA);
+
+            attron(COLOR_PAIR(2)); //color on
+            move(28,40);
+            mvprintw(28,40,"  ========================================  ");
+            move(29,40);
+            mvprintw(29,40,"  ||    :) FILE SAVED TO save.txt :)    ||  ");
+            move(30,40);
+            mvprintw(30,40,"  ========================================  ");
+
+            // sleep(2000000);
+            refresh();
+            napms(1500);
+            attroff(COLOR_PAIR(2)); // color off
+            // delay_output(2000);
+            refresh();
+            move(28,40);
+            mvprintw(28,40,"                                             ");
+            move(29,40);
+            mvprintw(29,40,"                                             ");
+            move(30,40);
+            mvprintw(30,40,"                                             ");
+            refresh();
         }
         
         void backspace(){
@@ -624,6 +805,7 @@ class NotePad{
                 addch(' ');
                 // move(y,x);
                 li.remove();
+                Q1.dequeue();
             }
             
            if(x<=15){
@@ -637,19 +819,23 @@ class NotePad{
            
            
         }
+
 };
 
 int main(){
     AVLtree DictTree;
-    // cout<<"\n<================ READING DICTIONARY ==========================>\n";
-    // DictTree.root = ReadTXT();
-    // cout<<"\n<===================DICTIONARY READ SUCCESSFULLY ===============>\n\n";
+    cout<<"\n<================ READING DICTIONARY ==========================>\n";
+    DictTree.root = ReadTXT();
+    cout<<"\n<===================DICTIONARY READ SUCCESSFULLY ===============>\n\n";
     NotePad N(DictTree);
     N.display();
             // cout<<"yes\n";
 
     // DictTree.PreOrder(DictTree.root);
-
+    cout<<"list\n";
+    N.li.display();
+    // cout<<"\n STACK\n";
+    // N.stk.display();
 
     // cout<<"HELLO WORLD \n";
     return 0;
