@@ -63,9 +63,9 @@ void letterinsert(string str){
             for(int j =0 ; str[j]!='\0';j++){
                 if(k==j){
                     temp+=i;
-                }else{
-                    temp+=str[j];
+ 
                 }
+                    temp+=str[j];
             }
             cout<<temp<<" ";
         }
@@ -78,27 +78,31 @@ void letterinsert(string str){
 }
 
 
- string letterReversal(string str){
+void letterReversal(string str){
             for(int i=0;str[i]!='\0';i++){
                 string temp = "";
                 for(int j=0;str[j]!='\0';j++){
-                    if(i==j){
-                        // char te = str[i];
-                        temp[j] = str[j+1];
-                        temp[j+1] = str[j];
+                    if(i==j && str[j+1] !='\0'){
+                        char te = temp[j];
+                       temp+=str[j+1];
+                        temp+=str[j];
+                        j++;
 
                     }else{
                         temp+=str[j];
                     }
                 }
+                cout<<temp<<" ";
             }
+            cout<<endl;
         }
 
 int main() {
     // cout << "Hello, World!" << endl;
     // ReadTXT();
-    // letteromit("12345");
-    // letterSubs("12345");
-    letterinsert("12345");
+    letteromit("catt");
+    // letterinsert("plce");
+    // letterinsert("12345");
+    // letterReversal("paernt");
     return 0;
 }

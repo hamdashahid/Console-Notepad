@@ -1,8 +1,15 @@
-#include<iostream>
-#include <ncurses.h>
-#include <fstream>
-#include<string>
+#include <iostream>
+#include <string>
+#include<fstream>
+// #include <stack>
+// #include <queue>
+// #include "dictionary.h" // Assuming you have a dictionary class for searching words
+
 using namespace std;
+
+// queue<char> Q1;
+// stack<string> stk;
+// // Dictionary dict; // Assuming you have a Dictionary class instance
 
 struct ListNode{
     ListNode* next;
@@ -112,7 +119,7 @@ class Queue{
                 dequeue();
             }
         }
-};
+}Q1;
 
 
 class Stack{
@@ -155,7 +162,7 @@ class Stack{
             }
             cout<<endl;
         }
-};
+}stk;
 
 class List{
     public:
@@ -427,7 +434,7 @@ class AVLtree{
             return false;
         }
 
-};
+} dict;
 
 AVLnode* ReadTXT(){
     AVLtree avl;
@@ -448,130 +455,13 @@ AVLnode* ReadTXT(){
     return avl.root;
 }
 
-class NotePad{
+class check{
     public:
-        AVLtree dict;
-        List li;
-        Stack stk;
-        Queue Q1;   
-        int x ;
-        int y;
-        int prevx;
-        int prevy;
-        Stack xpos;
-
-        NotePad(AVLtree d){
-            dict = d;
-            li = List();
-            Q1 = Queue();
-            stk = Stack();
-            x=15;
-            y=10;
-            prevx=x;
-            prevy=y;
-            xpos = Stack();
-        }
-
-        void display(){
-            system("stty -ixon");
-            initscr();
-            noecho();
-            cbreak();
-            NotepadScreen();
-
-
-            getch();
-            endwin();
-        }
-
-        void NotepadScreen(){
-            // clearScreen();
-            clear();
-            refresh();
-            start_color();
-            init_pair(1,COLOR_MAGENTA,COLOR_BLACK);
-
-            attron(COLOR_PAIR(1)); //color on
-            mvprintw(1,23,"  ===================================================================  ");
-            mvprintw(2,23,"  ||    ;) ENJOY WRITING ;)                                        ||  ");
-            mvprintw(3,23,"  ||                          :) NOTEPAD :)                        ||  ");
-            mvprintw(4,23,"  ||                                         BY HAMDA SHAHID       ||  ");
-            mvprintw(5,23,"  ===================================================================  ");
-
-            mvprintw(2,95,"======================");
-            mvprintw(3,95,"||    SUGGESTIONS   ||");
-            mvprintw(4,95,"======================");
-            for(int i=5 ; i<30;i++){
-                mvprintw(i,95,"||                  ||");
-            }
-            mvprintw(30,95,"======================");
-            // mvprintw(2,95,"====================");
-            // attroff(COLOR_PAIR(1)); // color off
-            bkgd(COLOR_PAIR(1));
-            border(0,0,0,0,0,0,0,0);
-            takeinputs();
-            refresh();
-        }
-
-        void takeinputs(){
-            keypad(stdscr, TRUE);
-            cbreak();
-            noecho();
-            nodelay(stdscr, TRUE);  
-            for(int i=0 ; true ; i++){
-                char ch = getch();
-                switch(ch){
-                    case 12 :               //CTRL+L
-                        load();
-                        break;
-                    case 19 :               //CTRL+S
-                        save();
-                        break;   
-                    case 8:                 //BACKSPACE
-                        backspace();
-                        break;    
-                    case 32:                //SPACE
-
-                        Wordcheck();
-                        xpos.push(to_string(x));
-                        li.append(ch);
-                        // Q1.enqueue(ch);
-                        x++;
-                        // word check
-                        break;
-                    case 10:        //ENTER
-                        li.append('\n');
-                        // Q1.enqueue('\n');
-                        xpos.push(to_string(x));
-                        x=15;
-                        y++;
-                        //word check
-                        break;    
-                    case 9:                 //TAB
-                        li.append(ch);
-                        // Q1.enqueue(ch);
-                        xpos.push(to_string(x));
-                        x+=4;
-                        // /word check
-                        break;    
-                    case 27:                //ESC
-                        return;     
-                    default:
-                       
-                        if((ch >=32 && ch<127) || ch==9 || ch==10 ){
-                            printText(ch);
-                        }
-                        // return;
-                }
-
-            }
-        }
-
-        void Wordcheck(){
-            string str = "";
-            while(Q1.isEmpty() == false){
-                str+=Q1.dequeue();
-            }
+        void Wordcheck(string str){
+            // string str = "";
+            // while(Q1.isEmpty() == false){
+            //     str+=Q1.dequeue();
+            // }
             
             bool str2 = dict.search(str);
 
@@ -640,8 +530,9 @@ class NotePad{
                     for(int j =0 ; str[j]!='\0';j++){
                         if(k==j){
                             temp+=i;
+                        }else{
+                            temp+=str[j];
                         }
-                        temp+=str[j];
                     }
                     bool ss = dict.search(temp);
                     if(ss ==true){
@@ -682,242 +573,37 @@ class NotePad{
         void suggestions(string str){
             // cout<<"SPACE \n";
             // stk.display();
-            for(int i=5 ; i<30;i++){
-                mvprintw(i,95,"||                  ||");
-            }
             bool modify = modifyWord(str);
-            int xcor = 98;
-            int ycor = 6;
+            int xcor = 70;
+            int ycor = 20;
             if(modify==true){
-                int i =1;
-                while(stk.isEmpty()==false){
-                    if(ycor<30){
-                        // mvprintw(ycor,xcor,"%s","         ");
-                        mvprintw(ycor,xcor,"%s",((stk.pop()).c_str()));
-                        // ycor++;
-                        xcor+=7;
-                    }else{
-                        return;
-                    }
-                    
-                    i++;
-                    if(i==3){
-                        xcor = 98;
-                        ycor++;
-                        i=1;
-                    }
-                }
+                // while(stk.isEmpty()==false){
+                //     mvprintw(ycor,xcor,"%s","                 ");
+                //     mvprintw(ycor,xcor,"%s",((stk.pop()).c_str()));
+                //     ycor++;
+                // }
             }
-        }
-
-        void printText(char a){
-           
-            if(y<=27 && x<=100){
-                if((a >=32 && a<127) || a==9 || a==10 ){
-                    li.append(a);
-                    if(a!=9 && a!=10 && a!=32){
-                        Q1.enqueue(a);
-                    }
-                    // printText(a);
-                }
-                if(a >= 32 && a < 127){
-                    move(y,x);
-                    addch(a);
-                    xpos.push(to_string(x));
-                    x++;
-                }
-                if(a==10){
-                    // prevx=x;
-                    xpos.push(to_string(x));
-                    x=15;
-                    y++;
-
-                }
-                if(a==9){
-                    xpos.push(to_string(x));
-                    x+=4;
-                }
-                if(a==32){
-                    Wordcheck();
-                }
-            }else{
-                refresh();
-                start_color();
-                init_pair(2,COLOR_BLACK,COLOR_MAGENTA);
-
-                attron(COLOR_PAIR(2)); //color on
-                move(28,40);
-                mvprintw(28,40,"  ================================  ");
-                move(29,40);
-                mvprintw(29,40,"  ||    :( NO MORE SPACE :()    ||  ");
-                move(30,40);
-                mvprintw(30,40,"  ================================  ");
-
-                // sleep(2000000);
-                refresh();
-                napms(100);
-                attroff(COLOR_PAIR(2)); // color off
-                // delay_output(2000);
-                refresh();
-                move(28,40);
-                mvprintw(28,40,"                                    ");
-                move(29,40);
-                mvprintw(29,40,"                                    ");
-                move(30,40);
-                mvprintw(30,40,"                                    ");
-                refresh();
-            }
-
-            // if(a==8){
-            //     cout<<"backspace";
-            //     x--;
-            // }
-            
-            refresh();
-        }
-
-        void load(){
-            ifstream in("save.txt");
-            if(!in){
-                start_color();
-                init_pair(2,COLOR_BLACK,COLOR_MAGENTA);
-
-                attron(COLOR_PAIR(2)); //color on
-                move(28,40);
-                mvprintw(28,40,"  ===============================  ");
-                move(29,40);
-                mvprintw(29,40,"  ||    :( NO FILE FOUND :(    ||  ");
-                move(30,40);
-                mvprintw(30,40,"  ===============================  ");
-
-                // sleep(2000000);
-                refresh();
-                napms(1500);
-                attroff(COLOR_PAIR(2)); // color off
-                // delay_output(2000);
-                refresh();
-                move(28,40);
-                mvprintw(28,40,"                                   ");
-                move(29,40);
-                mvprintw(29,40,"                                   ");
-                move(30,40);
-                mvprintw(30,40,"                                   ");
-                refresh();
-                // usleep(2000000);
-                // mvprintw(28,40,"                                   ");
-                // mvprintw(29,40,"                                   ");
-                // mvprintw(30,40,"                                   ");
-            }else{
-                printText(10);
-                while(!in.eof()){
-                    string str ="";
-                    getline(in,str);
-                    for(int i=0 ; str[i]!='\0' ;i++){
-                        // li.append(str[i]);
-                        printText(str[i]);
-
-                    }
-                    printText(10);
-                }
-            }
-
-        }
-
-        void save(){
-            // cout<<"hello\n";
-            ofstream out;
-            if(li.isEmpty() == true) return;
-            out.open("save.txt" );
-                ListNode* temp = li.head;
-                // StackNode* temp = stk.top;
-                while(temp!=NULL){
-                    out<<temp->data;
-                    temp=temp->next;
-                }
-            out.close();
-            refresh();
-            start_color();
-            init_pair(2,COLOR_BLACK,COLOR_MAGENTA);
-
-            attron(COLOR_PAIR(2)); //color on
-            move(28,40);
-            mvprintw(28,40,"  ========================================  ");
-            move(29,40);
-            mvprintw(29,40,"  ||    :) FILE SAVED TO save.txt :)    ||  ");
-            move(30,40);
-            mvprintw(30,40,"  ========================================  ");
-
-            // sleep(2000000);
-            refresh();
-            napms(1500);
-            attroff(COLOR_PAIR(2)); // color off
-            // delay_output(2000);
-            refresh();
-            move(28,40);
-            mvprintw(28,40,"                                             ");
-            move(29,40);
-            mvprintw(29,40,"                                             ");
-            move(30,40);
-            mvprintw(30,40,"                                             ");
-            refresh();
-        }
-        
-        void backspace(){
-            // cout<<x<<" ";
-            if (y>10 && x == 15){
-                y--;
-                // x=prevx;
-                x = stoi(xpos.pop());
-                move(y,x);
-                addch(' ');
-                // move(y,x);
-                li.remove();
-                // Q1.dequeue();
-                Q1.makeEmpty();
-                ListNode* temp = li.head;
-                while(temp!=NULL){
-                    Q1.enqueue(temp->data);
-                    temp=temp->next;
-                }
-            }
-            
-           if(x<=15){
-           }else{
-                x = stoi(xpos.pop());
-                move(y,x);
-                addch(' ');
-                // move(y,x);
-                li.remove();
-                // Q1.dequeue();
-                Q1.makeEmpty();
-                ListNode* temp = li.head;
-                while(temp!=NULL){
-                    Q1.enqueue(temp->data);
-                    temp=temp->next;
-                }
-           }
-           
-           
         }
 
 };
 
 int main(){
-    AVLtree DictTree;
+        // AVLtree DictTree;
     cout<<"\n<================ READING DICTIONARY ==========================>\n";
-    DictTree.root = ReadTXT();
+    dict.root = ReadTXT();
     cout<<"\n<===================DICTIONARY READ SUCCESSFULLY ===============>\n\n";
-    NotePad N(DictTree);
-    N.display();
+    // NotePad N(DictTree);
+    // N.display();
             // cout<<"yes\n";
-
+            check c;
+    c.Wordcheck("plce");
     // DictTree.PreOrder(DictTree.root);
-    cout<<"list\n";
-    N.li.display();
-    cout<<"\n QUEUE\n";
-    N.Q1.display();
-    cout<<"\nSTACK\n";
-    N.stk.display();
+    // cout<<"list\n";
+    // N.li.display();
+    // cout<<"\n QUEUE\n";
+    // N.Q1.display();
+    // cout<<"\nSTACK\n";
+    stk.display();
 
     // cout<<"HELLO WORLD \n";
     return 0;
