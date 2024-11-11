@@ -874,10 +874,15 @@ class NotePad{
                 li.remove();
                 // Q1.dequeue();
                 Q1.makeEmpty();
-                ListNode* temp = li.head;
-                while(temp!=NULL){
-                    Q1.enqueue(temp->data);
-                    temp=temp->next;
+                ListNode* temp = li.tail;
+                string str = "";
+                while(temp!=NULL && temp->data!=' '){
+                    // Q1.enqueue(temp->data);
+                    str+=temp->data;
+                    temp=temp->prev;
+                }
+                for(int i=str.length()-1;i>=0 ; i--){
+                    Q1.enqueue(str[i]);
                 }
             }
             
@@ -890,10 +895,15 @@ class NotePad{
                 li.remove();
                 // Q1.dequeue();
                 Q1.makeEmpty();
-                ListNode* temp = li.head;
-                while(temp!=NULL){
-                    Q1.enqueue(temp->data);
-                    temp=temp->next;
+                ListNode* temp = li.tail;
+                string str = "";
+                while(temp!=NULL && temp->data!=' '){
+                    // Q1.enqueue(temp->data);
+                    str+=temp->data;
+                    temp=temp->prev;
+                }
+                for(int i=str.length()-1;i>=0 ; i--){
+                    Q1.enqueue(str[i]);
                 }
            }
            
