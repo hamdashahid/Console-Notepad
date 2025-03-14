@@ -38,15 +38,15 @@ A lightweight **console-based notepad** application with **spell-checking** and 
 
 ### Main Interface
 
-![Main Interface](screenshots/Notepad_main.png)
+![Main Interface](Notepad_main.png)
 
 ### Backspace Functionality
 
-![Backspace](screenshots/notepad_backspace.png)
+![Backspace](notepad_backspace.png)
 
 ### Load Text
 
-![Load Text](screenshots/Notepad_load.png)
+![Load Text](Notepad_load.png)
 
 ### Save Text
 
@@ -54,11 +54,11 @@ A lightweight **console-based notepad** application with **spell-checking** and 
 
 ### Spell Check Suggestions
 
-![Suggestions](screenshots/notepad_suggestions.png)
+![Suggestions](notepad_suggestions.png)
 
 ### Writing Text
 
-![Writing Text](screenshots/notepad_write.png)
+![Writing Text](notepad_write.png)
 
 ---
 
