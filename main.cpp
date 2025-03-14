@@ -540,6 +540,7 @@ class NotePad{
                         // word check
                         break;
                     case 10:        //ENTER
+                        Wordcheck();
                         li.append('\n');
                         // Q1.enqueue('\n');
                         xpos.push(to_string(x));
@@ -548,6 +549,7 @@ class NotePad{
                         //word check
                         break;    
                     case 9:                 //TAB
+                        Wordcheck();
                         li.append(ch);
                         // Q1.enqueue(ch);
                         xpos.push(to_string(x));
@@ -712,7 +714,7 @@ class NotePad{
 
         void printText(char a){
            
-            if(y<=27 && x<=100){
+            if(y<=27 && x<=93){
                 if((a >=32 && a<127) || a==9 || a==10 ){
                     li.append(a);
                     if(a!=9 && a!=10 && a!=32){
@@ -727,6 +729,7 @@ class NotePad{
                     x++;
                 }
                 if(a==10){
+                    Wordcheck();        
                     // prevx=x;
                     xpos.push(to_string(x));
                     x=15;
@@ -740,6 +743,11 @@ class NotePad{
                 if(a==32){
                     Wordcheck();
                 }
+            }else if(x>93){
+                Wordcheck();        
+                xpos.push(to_string(x));
+                x=15;
+                y++;
             }else{
                 refresh();
                 start_color();
